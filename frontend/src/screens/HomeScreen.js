@@ -1,35 +1,25 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'react-bootstrap'
 import User from '../components/User'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import Pagination from '../components/Pagination'
+import Paginate from '../components/Paginate'
 import { listUsers } from '../actions/userActions'
-import { useDispatch, useSelector } from 'react-redux'
 
-const HomeScreen = () => {
+const HomeScreen = ({ match }) => {
+  const keyword = match.params.keyword
+
+  const pageNumber = match.params.pageNumber || 1
+
   const dispatch = useDispatch()
 
   const usersList = useSelector((state) => state.userList)
-  const { loading, error, users } = usersList
-
-  const [currentPage, setCurrentPage] = useState(1)
-  const [usersPerPage] = useState(10)
+  const { loading, error, users, page, pages } = usersList
 
   useEffect(() => {
-    dispatch(listUsers())
-  }, [currentPage])
-
-  // Get Current Users
-  const indexOfLastUser = currentPage * usersPerPage
-  const indexOfFirstUser = indexOfLastUser - usersPerPage
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser)
-
-  // Change page
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+    dispatch(listUsers(keyword, pageNumber))
+  }, [dispatch, keyword, pageNumber])
 
   return (
     <>
@@ -39,19 +29,21 @@ const HomeScreen = () => {
       ) : error ? (
         <Message variant='danger'>{error}</Message>
       ) : (
-        <Row>
-          {currentUsers.map((user) => (
-            <Col key={user.id} sm={12} md={6} lg={3} xl={4}>
-              <User user={user} />
-            </Col>
-          ))}
-        </Row>
+        <>
+          <Row>
+            {users.map((user) => (
+              <Col key={user._id} sm={12} md={6} lg={3} xl={4}>
+                <User user={user} />
+              </Col>
+            ))}
+          </Row>
+          <Paginate
+            pages={pages}
+            page={page}
+            keyword={keyword ? keyword : ''}
+          />
+        </>
       )}
-      <Pagination
-        usersPerPage={usersPerPage}
-        totalUsers={users.length}
-        paginate={paginate}
-      />
     </>
   )
 }

@@ -14,14 +14,15 @@ const AddUser = () => {
     e.preventDefault()
     try {
       const newUser = {
-        first_name: firstname,
-        last_name: secondname,
+        firstname: firstname,
+        secondname: secondname,
         email: email,
         gender: gender,
         phone: phone,
       }
-      await axios.post('http://localhost:5000/users', newUser)
+      await axios.post('http://localhost:5000/api/users/addnewuser', newUser)
       alert('New user added succesully')
+      window.location.reload()
     } catch (error) {
       console.log(error.message)
     }
@@ -37,7 +38,6 @@ const AddUser = () => {
               <Form.Control
                 type='text'
                 placeholder='Enter First Name'
-                value={firstname}
                 onChange={(e) => setFirstname(e.target.value)}
               />
             </Form.Group>
@@ -47,7 +47,6 @@ const AddUser = () => {
               <Form.Control
                 type='text'
                 placeholder='Enter Second Name'
-                value={secondname}
                 onChange={(e) => setSecondname(e.target.value)}
               />
             </Form.Group>
@@ -57,7 +56,6 @@ const AddUser = () => {
               <Form.Control
                 type='text'
                 placeholder='Enter Email'
-                value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Group>
@@ -70,8 +68,8 @@ const AddUser = () => {
                 selected={gender}
               >
                 <option>----Select Gender--------</option>
-                <option value='male'>Male</option>
-                <option value='female'>Female</option>
+                <option value='Male'>Male</option>
+                <option value='Female'>Female</option>
               </select>
             </Form.Group>
 
@@ -80,7 +78,6 @@ const AddUser = () => {
               <Form.Control
                 type='text'
                 placeholder='Enter Phone'
-                value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
             </Form.Group>

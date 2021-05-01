@@ -2,41 +2,42 @@ import React from 'react'
 import { useState } from 'react'
 import { Card, Row, Col, ListGroup, Button, Modal, Form } from 'react-bootstrap'
 import userimage from './userimage.jpg'
-import { useDispatch } from 'react-redux'
 
 import axios from 'axios'
 
 const User = ({ user }) => {
-  const dispatch = useDispatch()
-
   const [show, setShow] = useState(false)
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
   //updated user details
-
-  const [id] = useState(user.id)
+  const [id] = useState(user._id)
   const [Firstname, setFirstname] = useState(user.first_name)
   const [Secondname, setSecondname] = useState(user.last_name)
   const [Email, setEmail] = useState(user.email)
   const [Gender, setGender] = useState(user.gender)
   const [Phone, setPhone] = useState(user.phone)
 
+  // update user
   const submitHandler = async (e) => {
     e.preventDefault()
     try {
       const userUpdatedDetails = {
-        first_name: Firstname,
-        last_name: Secondname,
+        _id: id,
+        firstname: Firstname,
+        secondname: Secondname,
         email: Email,
         gender: Gender,
         phone: Phone,
       }
       const res = await axios.put(
-        `http://localhost:5000/users/${id}`,
+        'http://localhost:5000/api/users/updateuser',
         userUpdatedDetails
       )
+      if (res.data.message) {
+        alert('User updated succesfully')
+      }
       window.location.reload()
     } catch (error) {
       console.log(error.message)
@@ -45,12 +46,21 @@ const User = ({ user }) => {
 
   //   user Delete handler
   const deleteHandler = async () => {
-    try {
-      const res = await axios.delete(`http://localhost:5000/users/${id}`)
-      window.location.reload()
-      alert('Given User Deleted Succesfully')
-    } catch (error) {
-      console.log(error.message)
+    if (window.confirm('Are you sure to delete this user')) {
+      try {
+        const res = await axios.delete(
+          'http://localhost:5000/api/users/deleteuser',
+          {
+            data: {
+              id,
+            },
+          }
+        )
+        window.location.reload()
+        alert('Given User Deleted Succesfully')
+      } catch (error) {
+        console.log(error.message)
+      }
     }
   }
 
@@ -58,7 +68,7 @@ const User = ({ user }) => {
     <>
       <Card
         className='my-3 p-3 rounded'
-        style={{ width: '22rem', height: '21rem' }}
+        style={{ width: '21rem', height: '21rem' }}
       >
         <Row>
           <Col md={3}>
@@ -128,7 +138,7 @@ const User = ({ user }) => {
           <Form onSubmit={submitHandler}>
             <Form.Group>
               <Form.Label>User ID</Form.Label>
-              <Form.Control type='number' value={id} readOnly />
+              <Form.Control type='text' value={id} readOnly />
             </Form.Group>
 
             <Form.Group>
@@ -166,8 +176,8 @@ const User = ({ user }) => {
                 onChange={(e) => setGender(e.target.value)}
               >
                 <option>----Select Gender--------</option>
-                <option value='male'>Male </option>
-                <option value='female'>Female</option>
+                <option value='Male'>Male </option>
+                <option value='Female'>Female</option>
               </select>
             </Form.Group>
 

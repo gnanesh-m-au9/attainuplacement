@@ -1,10 +1,14 @@
 import axios from 'axios'
 
-export const listUsers = () => async (dispatch) => {
+export const listUsers = (keyword = '', pageNumber = '') => async (
+  dispatch
+) => {
   try {
     dispatch({ type: 'USERS_LIST_REQUEST' })
 
-    const { data } = await axios.get('http://localhost:5000/users')
+    const { data } = await axios.get(
+      `http://localhost:5000/api/users?keyword=${keyword}&pageNumber=${pageNumber}`
+    )
     dispatch({ type: 'USERS_LIST_SUCCESS', payload: data })
   } catch (error) {
     dispatch({
